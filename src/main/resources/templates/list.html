@@ -1,0 +1,77 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" th:href="@{/todos}">TodoApp</a>
+</nav>
+
+<div class="container mt-4">
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Header and Add Button -->
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Todo List</h2>
+        <a class="btn btn-success" th:href="@{/todos/new}">Add New Todo</a>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="btn-group mb-3" role="group">
+        <a th:href="@{/todos}" th:classappend="${filter == 'ALL'} ? ' btn-primary' : ' btn-outline-primary'" class="btn">All</a>
+        <a th:href="@{/todos(filter='PENDING')}" th:classappend="${filter == 'PENDING'} ? ' btn-primary' : ' btn-outline-primary'" class="btn">Pending</a>
+        <a th:href="@{/todos(filter='DONE')}" th:classappend="${filter == 'DONE'} ? ' btn-primary' : ' btn-outline-primary'" class="btn">Done</a>
+    </div>
+
+    <!-- Table -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="todo : ${todos}">
+            <td th:text="${todo.title}"></td>
+            <td th:text="${todo.description}"></td>
+            <td>
+                <span th:text="${todo.status}" th:classappend="${todo.status.name() == 'DONE'} ? 'text-success' : 'text-warning'"></span>
+            </td>
+            <td th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{/todos/edit/{id}(id=${todo.id})}" class="btn btn-sm btn-info">Edit</a>
+
+                <form th:action="@{/todos/done/{id}(id=${todo.id})}" method="post"
+                      th:if="${todo.status.name() == 'PENDING'}" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-success">Mark Done</button>
+                </form>
+
+                <form th:action="@{/todos/delete/{id}(id=${todo.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('Delete this todo?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
