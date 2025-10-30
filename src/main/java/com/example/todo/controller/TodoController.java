@@ -75,4 +75,40 @@ public class TodoController {
         ra.addFlashAttribute("success", "Marked as done");
         return "redirect:" + (referer != null ? referer : "/todos");
     }
+
+    @GetMapping("/tracker")
+    public String tracker(Model model) {
+        long total = service.countAll();
+        long done = service.countByStatus(Todo.Status.DONE);
+        long pending = service.countByStatus(Todo.Status.PENDING);
+
+        double donePercent = total == 0 ? 0 : (done * 100.0 / total);
+        double pendingPercent = total == 0 ? 0 : (pending * 100.0 / total);
+
+        String quote;
+        if (total == 0) {
+            quote = "No tasks yet — let's get started!";
+        } else if (donePercent == 100) {
+            quote = "🎉 Great job! You’ve completed all your tasks!";
+        } else if (donePercent >= 70) {
+            quote = "👏 Almost there! Just a few more to go!";
+        } else if (donePercent >= 40) {
+            quote = "Keep going — you’re halfway through!";
+        } else if (donePercent > 0) {
+            quote = "Good start! Stay consistent and finish strong!";
+        } else {
+            quote = "Let’s begin! Start checking off your first task!";
+        }
+
+        model.addAttribute("donePercent", donePercent);
+        model.addAttribute("pendingPercent", pendingPercent);
+        model.addAttribute("quote", quote);
+        return "tracker";
+    }
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+
 }

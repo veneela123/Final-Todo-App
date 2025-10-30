@@ -1,0 +1,132 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Task Tracker</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #taskChart {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .quote {
+            font-size: 1.2rem;
+            color: #004d66;
+            margin-top: 25px;
+            background-color: #d4f2f7;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .no-task {
+            font-size: 1.4rem;
+            color: #006666;
+            background-color: #d9f3fa;
+            padding: 15px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" th:href="@{/todos}">TodoApp</a>
+    <div class="navbar-nav ml-auto">
+        <a class="nav-link" th:href="@{/todos}">Home</a>
+        <a class="nav-link active" th:href="@{/todos/tracker}">Progress</a>
+        <a class="nav-link" th:href="@{/todos/about}">About</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="card p-4" id="tracker-card">
+        <h2>Progress</h2>
+        <canvas id="taskChart" width="280" height="280"></canvas>
+        <div class="alert alert-info mt-4">
+            <h5 th:text="${quote}"></h5>
+        </div>
+    </div>
+
+    <div id="no-tasks" class="no-task" style="display: none;">
+        No tasks yet — let’s begin!
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const donePercent = [[${donePercent}]];
+    const pendingPercent = [[${pendingPercent}]];
+
+    // Check if there are no todos
+    if (donePercent === 0 && pendingPercent === 0) {
+        document.getElementById('tracker-card').style.display = 'none';
+        document.getElementById('no-tasks').style.display = 'block';
+    } else {
+        const ctx = document.getElementById('taskChart').getContext('2d');
+
+        // Plugin for center text
+        const centerTextPlugin = {
+            id: 'centerText',
+            afterDraw(chart) {
+                const { ctx, chartArea: { width, height } } = chart;
+                ctx.save();
+                ctx.font = 'bold 24px Arial';
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(donePercent.toFixed(0) + '%', width / 2, height / 2 - 10);
+                ctx.font = '16px Arial';
+                ctx.fillText('completed', width / 2, height / 2 + 15);
+            }
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Pending'],
+                datasets: [{
+                    data: [donePercent, pendingPercent],
+                    backgroundColor: ['#28a745', '#e9ecef'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                animation: {
+                    animateRotate: true,
+                    duration: 1500
+                }
+            },
+            plugins: [centerTextPlugin]
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

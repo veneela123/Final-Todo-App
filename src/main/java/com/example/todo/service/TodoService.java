@@ -18,15 +18,15 @@ public class TodoService {
 
     public List<Todo> findAll(String filter) {
         if (filter == null || filter.isEmpty() || filter.equalsIgnoreCase("ALL")) {
-            return repo.findAllByOrderByCreatedAtDesc();
+            return repo.findAllByOrderByCreatedAtAsc();
         }
         if (filter.equalsIgnoreCase("PENDING")) {
-            return repo.findByStatusOrderByCreatedAtDesc(Todo.Status.PENDING);
+            return repo.findByStatusOrderByCreatedAtAsc(Todo.Status.PENDING);
         }
         if (filter.equalsIgnoreCase("DONE")) {
-            return repo.findByStatusOrderByCreatedAtDesc(Todo.Status.DONE);
+            return repo.findByStatusOrderByCreatedAtAsc(Todo.Status.DONE);
         }
-        return repo.findAllByOrderByCreatedAtDesc();
+        return repo.findAllByOrderByCreatedAtAsc();
     }
 
     public Todo save(Todo todo) { return repo.save(todo); }
@@ -39,4 +39,6 @@ public class TodoService {
             repo.save(t);
         });
     }
+    public long countAll() { return repo.count(); }
+    public long countByStatus(Todo.Status status) { return repo.countByStatus(status); }
 }

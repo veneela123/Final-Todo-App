@@ -1,6 +1,9 @@
 package com.example.todo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,6 +17,8 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")             // ✅ Must not be blank
+    @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -40,4 +45,3 @@ public class Todo {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
-

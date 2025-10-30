@@ -7,6 +7,8 @@ import java.util.List;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo,Long> {
-    List<Todo> findByStatusOrderByCreatedAtDesc(Todo.Status status);
-    List<Todo> findAllByOrderByCreatedAtDesc();
+    List<Todo> findByStatusOrderByCreatedAtAsc(Todo.Status status);
+    List<Todo> findAllByOrderByCreatedAtAsc();
+    long countByStatus(Todo.Status status);
+
 }
